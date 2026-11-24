@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    The permanent BepInEx plugin (installed as BepInEx/plugins/RainBot.dll, whitelisted). It holds
+    the config and the log, and loads the real mod (RainBotCore.dll, ../RainBot) from
+    BepInEx/rainbot/, and swaps it when a new build lands there, so a build needs no game restart.
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>RainBot</AssemblyName>
+    <RootNamespace>RainBot</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <NoWarn>$(NoWarn);CS0618;CS1591</NoWarn>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Version>0.4.0</Version>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(RainWorldDir)' == ''">
+    <RainWorldDir>$(HOME)/.steam/steam/steamapps/common/Rain World</RainWorldDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BepInEx"><HintPath>$(RainWorldDir)/BepInEx/core/BepInEx.dll</HintPath></Reference>
+    <Reference Include="Mono.Cecil"><HintPath>$(RainWorldDir)/BepInEx/core/Mono.Cecil.dll</HintPath></Reference>
+    <Reference Include="UnityEngine"><HintPath>$(RainWorldDir)/RainWorld_Data/Managed/UnityEngine.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(RainWorldDir)/RainWorld_Data/Managed/UnityEngine.CoreModule.dll</HintPath></Reference>
+    <Reference Update="@(Reference)"><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

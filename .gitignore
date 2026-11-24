@@ -1,0 +1,11 @@
+python/.venv/
+mod/RainBot/bin/
+mod/RainBot/obj/
+reference/types/
+/data/
+__pycache__/
+*.pyc
+mod/Loader/bin/
+mod/Loader/obj/
+reference/decomp/
+/runs/

@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    BepInEx 5 plugin for Rain World v1.11.8 (Unity 2020.3.45, CLR v4.0.30319).
+
+    Target is netstandard2.0, not .NET Framework 3.5: Rain World 1.9+ runs on a Unity 2020
+    runtime, which does not load 3.5 assemblies.
+
+    References point at the installed game, not at a vendored copy, so the build always matches
+    the assemblies the mod runs against. Override the location with -p:RainWorldDir=...
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>RainBotCore</AssemblyName>
+    <RootNamespace>RainBot</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <!-- The game ships no XML docs and Unity assemblies have many obsolete members. These
+         warnings would hide the real ones. -->
+    <NoWarn>$(NoWarn);CS0618;CS1591</NoWarn>
+    <DebugType>portable</DebugType>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(RainWorldDir)' == ''">
+    <RainWorldDir>$(HOME)/.steam/steam/steamapps/common/Rain World</RainWorldDir>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ManagedDir>$(RainWorldDir)/RainWorld_Data/Managed</ManagedDir>
+    <BepInExDir>$(RainWorldDir)/BepInEx</BepInExDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The permanent loader plugin (mod/Loader): the ICore / IHost interfaces. -->
+    <ProjectReference Include="../Loader/Loader.csproj"><Private>false</Private></ProjectReference>
+    <!-- BepInEx host -->
+    <Reference Include="BepInEx"><HintPath>$(BepInExDir)/core/BepInEx.dll</HintPath></Reference>
+    <Reference Include="0Harmony"><HintPath>$(BepInExDir)/core/0Harmony.dll</HintPath></Reference>
+    <Reference Include="MonoMod.RuntimeDetour"><HintPath>$(BepInExDir)/core/MonoMod.RuntimeDetour.dll</HintPath></Reference>
+    <Reference Include="MonoMod.Utils"><HintPath>$(BepInExDir)/core/MonoMod.Utils.dll</HintPath></Reference>
+
+    <!-- The game itself -->
+    <Reference Include="Assembly-CSharp"><HintPath>$(ManagedDir)/Assembly-CSharp.dll</HintPath></Reference>
+    <Reference Include="Assembly-CSharp-firstpass"><HintPath>$(ManagedDir)/Assembly-CSharp-firstpass.dll</HintPath></Reference>
+
+    <!-- MonoMod HookGen output: this is what provides the `On.` namespace used for hooking. -->
+    <Reference Include="HOOKS-Assembly-CSharp"><HintPath>$(BepInExDir)/plugins/HOOKS-Assembly-CSharp.dll</HintPath></Reference>
+
+    <!-- Unity -->
+    <Reference Include="UnityEngine"><HintPath>$(ManagedDir)/UnityEngine.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(ManagedDir)/UnityEngine.CoreModule.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.InputLegacyModule"><HintPath>$(ManagedDir)/UnityEngine.InputLegacyModule.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.ScreenCaptureModule"><HintPath>$(ManagedDir)/UnityEngine.ScreenCaptureModule.dll</HintPath></Reference>
+    <Reference Include="UnityEngine.AudioModule"><HintPath>$(ManagedDir)/UnityEngine.AudioModule.dll</HintPath></Reference>
+    <!-- GUI / Event / EventType, for the tick marker overlay -->
+    <Reference Include="UnityEngine.IMGUIModule"><HintPath>$(ManagedDir)/UnityEngine.IMGUIModule.dll</HintPath></Reference>
+    <!-- IntVector2's implicit conversions reference Unity.Mathematics types, so the compiler
+         needs this assembly even though the mod never names int2/float2. -->
+    <Reference Include="Unity.Mathematics"><HintPath>$(ManagedDir)/Unity.Mathematics.dll</HintPath></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The hint paths resolve to the real files. Copying game assemblies into BepInEx/plugins
+         would break the load, so nothing is copied. -->
+    <Reference Update="@(Reference)">
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

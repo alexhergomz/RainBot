@@ -1,0 +1,7 @@
+# PyTorch with ROCm or CUDA: install the build for your GPU from https://pytorch.org first.
+torch>=2.4
+numpy
+scipy
+pytest
+# Optional: fla's KDA kernels (RAINBOT_KDA=fla), where they compile.
+# fla-core
